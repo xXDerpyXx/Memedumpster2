@@ -1,17 +1,26 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-	
-  var socket = io();
-  function sendMessage(){
-	  var message = document.getElementById("mainBox").value;
-	  var color = document.getElementById("colorBox").value;
-	  socket.emit('chat message',message,color)
-	  document.getElementById("mainBox").value = "";
+	//var audio = new Audio('note.mp3');
+	var recent = false;
+	var socket = io();
+	function sendMessage(){
+		if(recent == false){
+			var message = document.getElementById("mainBox").value;
+			var color = document.getElementById("colorBox").value;
+			socket.emit('chat message',message,color)
+			document.getElementById("mainBox").value = "";
+			recent = true;
+			setTimeout(function(){recent=false;},3000);
+	}else{
+		//response.sendRedirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+	}
   }
   socket.on('return message', function(msg,count){
 		document.getElementById("messages").innerHTML = msg;
 		document.getElementById("divers").innerHTML = count+"";
+		audio = document.getElementById("note");
+		audio.play();
   });
   
 function uploadMeme(){
@@ -22,6 +31,9 @@ function uploadMeme(){
 
   
 </script>
+<audio id="note">
+	<source src="note.mp3"/>
+</audio>
 <style>
 #messages{
 	max-height:250px;

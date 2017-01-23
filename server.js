@@ -3,6 +3,7 @@ var express = require('express');
 var userTotal = 0;
 console.log("GOT EXPRESS");
 var app = express();
+var lastMsg = "";
 //var fileIO = require('socket.io-file');
 console.log("GOT APP");
 var http = require('http').Server(app);
@@ -21,6 +22,7 @@ io.on('connection', function(socket){
    			console.log('user disconnected');
    			userTotal -= 1;
    			console.log('user count: '+userTotal)
+   			io.emit('return message',allMessage,userTotal);
  	});
 });
 
@@ -31,15 +33,20 @@ socket.on('chat message', function(msg,color){
 	console.log('message: ' + msg);
 	console.log('   color: ' + color);
 	msg = msg.trim();
-	if(msg.length>1000){
-		console.log("TOO LONG");
+	if(msg == lastMsg){
+		console.log("REPEAT");
 	}else{
-		if(msg.length>1){
-			allMessage = '<div style="background-color:#'+color+';padding:3px">'+msg+"</div>" +allMessage;
-			io.emit('return message',allMessage,userTotal);
-			console.log('   sending back: "'+msg+'", color: '+color);	
+		lastMsg = msg;
+		if(msg.length>1000){
+			console.log("TOO LONG");
 		}else{
-			console.log('TOO SHORT')
+			if(msg.length>1){
+				allMessage = '<div style="background-color:#'+color+';padding:3px">'+msg+"</div>" +allMessage;
+				io.emit('return message',allMessage,userTotal);
+				console.log('   sending back: "'+msg+'", color: '+color);	
+			}else{
+				console.log('TOO SHORT')
+			}
 		}
 	}
 	
