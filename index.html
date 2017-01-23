@@ -1,0 +1,78 @@
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+	
+  var socket = io();
+  function sendMessage(){
+	  var message = document.getElementById("mainBox").value;
+	  var color = document.getElementById("colorBox").value;
+	  socket.emit('chat message',message,color)
+	  document.getElementById("mainBox").value = "";
+  }
+  socket.on('return message', function(msg,count){
+		document.getElementById("messages").innerHTML = msg;
+		document.getElementById("divers").innerHTML = count+"";
+  });
+  
+
+  
+</script>
+<style>
+#messages{
+	max-height:250px;
+	overflow:auto;
+	width:750px;
+	margin:auto;
+}
+#chatStuffs{
+		margin:auto;
+		padding:5px;
+}
+#chattingStuffs{
+		margin:auto;
+		width:750;
+}
+#all{
+	width:1000px;
+	margin:auto;
+	background-color:aa99ff;
+}
+#mainTitle{
+	text-align:center;
+}
+#mainBox{
+	width:750px;
+	margin:auto;
+}
+#mainButton{
+	width:750px;
+}
+</style>
+	<div id="all">
+		<div id="mainTitle">
+			<h1>Memedumpster V2</h1>
+			<h3>Dumpster Divers: <span id="divers">0</span></h3>
+		</div>
+	<div></div>
+	<div id="chatStuffs">
+		<div id="chattingStuffs">
+			<span>color(hexidecimal):</span>
+			<input type="text" id="colorBox"/>
+			<input type="text" id="mainBox"/><input id="mainButton" type="button" onClick="sendMessage()" value="Push me!"/>
+			</div>
+		<div>
+			<div id="messages"></div>
+		</div>
+	</div>
+</div>
+
+<script>
+  document.getElementById('mainBox').onkeypress = function(e){
+    if (!e) e = window.event;
+    var keyCode = e.keyCode || e.which;
+    if (keyCode == '13'){
+      sendMessage();
+      return false;
+    }
+  }
+</script>
