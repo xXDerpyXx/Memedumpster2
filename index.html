@@ -14,6 +14,11 @@
 		document.getElementById("divers").innerHTML = count+"";
   });
   
+function uploadMeme(){
+	alert("MEME UPLOADING")
+	
+}
+  
 
   
 </script>
@@ -40,6 +45,9 @@
 #mainTitle{
 	text-align:center;
 }
+#memeTitle{
+	text-align:center;
+}
 #mainBox{
 	width:750px;
 	margin:auto;
@@ -64,6 +72,16 @@
 			<div id="messages"></div>
 		</div>
 	</div>
+	<div>
+		<br/>
+		<h1 id="memeTitle">Today's Meme</h1>
+		<img id="memePic" src=""/>
+		<div>
+			<form id="memeForm" onsubmit="uploadMeme()">
+				<input type="file" id="memeFile" /> <input type="submit" value="SUBMIT MEME"/>
+			</form>
+		</div>
+	</div>
 </div>
 
 <script>
@@ -75,4 +93,14 @@
       return false;
     }
   }
+	/*socket.on('meme', function(meme){
+		document.getElementById("memePic").src = meme;
+		tempFile = document.getElementById('memeFile');
+		uploader.upload(tempFile);
+	});
+	uploader.on('start', function(fileInfo) {
+		console.log('Start uploading', fileInfo);
+	});*/
 </script>
+
+
