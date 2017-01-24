@@ -2,6 +2,13 @@
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
 	//var audio = new Audio('note.mp3');
+	var url = window.location.href;
+	var timer = setInterval(displayColor,100);
+	function displayColor(){
+		document.getElementById("colorBox").style.backgroundColor = "#"+document.getElementById("colorBox").value;
+		document.getElementById("memeForm").action = url+"upload";
+		document.getElementById("memePic").src = "images/picture.png";
+	}
 	var recent = false;
 	var socket = io();
 	function sendMessage(){
@@ -16,11 +23,13 @@
 		//response.sendRedirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 	}
   }
-  socket.on('return message', function(msg,count){
+  socket.on('return message', function(msg,count,sound){
 		document.getElementById("messages").innerHTML = msg;
 		document.getElementById("divers").innerHTML = count+"";
 		audio = document.getElementById("note");
-		audio.play();
+		if(sound==true){
+			audio.play();
+		}
   });
   
 function uploadMeme(){
@@ -63,8 +72,22 @@ function uploadMeme(){
 #mainBox{
 	width:750px;
 	margin:auto;
+	height:30px;
+	background-color:ddccff;
 }
 #mainButton{
+	width:750px;
+}
+#memeForm{
+	margin:auto;
+}
+#memePic{
+	margin:auto;
+	max-width:750px;
+	margin-left:125px;
+}
+#memeStuff{
+	margin:auto;
 	width:750px;
 }
 </style>
@@ -76,9 +99,11 @@ function uploadMeme(){
 	<div></div>
 	<div id="chatStuffs">
 		<div id="chattingStuffs">
-			<span>color(hexidecimal):</span>
+			<span>color(hexadecimal):</span>
 			<input type="text" id="colorBox"/>
-			<input type="text" id="mainBox"/><input id="mainButton" type="button" onClick="sendMessage()" value="Push me!"/>
+			<!--<span id="dispColor">Current Color</span>-->
+			<input type="text" id="mainBox"/>
+			<!--<input id="mainButton" type="button" onClick="sendMessage()" value="Push me!"/>-->
 			</div>
 		<div>
 			<div id="messages"></div>
@@ -88,9 +113,10 @@ function uploadMeme(){
 		<br/>
 		<h1 id="memeTitle">Today's Meme</h1>
 		<img id="memePic" src=""/>
-		<div>
-			<form id="memeForm" onsubmit="uploadMeme()">
-				<input type="file" id="memeFile" /> <input type="submit" value="SUBMIT MEME"/>
+		<div id="memeStuff">
+			<form id="memeForm" action="" method="post" encType="multipart/form-data">
+				<input type="file" id="memeFile" name="tempFile"/> 
+				<input type="submit" value="SUBMIT MEME"/>
 			</form>
 		</div>
 	</div>
