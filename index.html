@@ -76,7 +76,17 @@ function uploadMeme(){
 	
 }
   
-
+function randomizeColor(){
+	randTimer = setInterval(randColor,10);
+	setTimeout(stopRandom,1000);
+}
+function randColor(){
+	document.getElementById("colorBox").value = (Math.random()*0xFFFFFF<<0).toString(16);
+	document.getElementById("colorBox").style.backgroundColor = "#"+document.getElementById("colorBox").value;
+}
+function stopRandom(){
+	clearInterval(randTimer);
+}
   
 </script>
 <audio id="note">
@@ -133,6 +143,7 @@ function uploadMeme(){
 	text-align:center;
 }
 </style>
+<title>Memedumpster</title>
 	<div id="all">
 		<div id="mainTitle">
 			<h1>Memedumpster V2</h1>
@@ -143,6 +154,7 @@ function uploadMeme(){
 		<div id="chattingStuffs">
 			<span>color(hexadecimal): #</span>
 			<input type="text" id="colorBox"/>
+			<input type="button" onclick="randomizeColor()" value="Randomize Color"/>
 			<!--<span id="dispColor">Current Color</span>-->
 			<input type="text" id="mainBox"/>
 			<!--<input id="mainButton" type="button" onClick="sendMessage()" value="Push me!"/>-->
