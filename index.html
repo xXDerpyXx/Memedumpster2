@@ -7,6 +7,9 @@
 	var url = window.location.href;
 	var timer = setInterval(displayColor,100);
 	setTimeout(function(){document.getElementById("colorBox").value = getCookie("color");},50);
+	setTimeout(function(){document.getElementById("keybox").value = getCookie("room");},50);
+	setTimeout(askForMessages,50);
+
 	//COOKIES
 	function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -30,23 +33,13 @@ function getCookie(cname) {
     return "";
 }
 
-function checkCookie() {
-    var user = getCookie("username");
-    if (user != "") {
-        alert("Welcome again " + user);
-    } else {
-        user = prompt("Please enter your name:", "");
-        if (user != "" && user != null) {
-            setCookie("username", user, 365);
-        }
-    }
-}
 	//END OF COOKIES
 	function displayColor(){
 		document.getElementById("colorBox").style.backgroundColor = "#"+document.getElementById("colorBox").value;
 		document.getElementById("memeForm").action = url+"upload";
 		document.getElementById("memePic").src = "images/picture.png";
 		setCookie("color",document.getElementById("colorBox").value,999);
+		setCookie("room",document.getElementById("keybox").value,999);
 	}
 	var recent = false;
 	var socket = io();
@@ -54,26 +47,45 @@ function checkCookie() {
 		if(recent == false){
 			var message = document.getElementById("mainBox").value;
 			var color = document.getElementById("colorBox").value;
-			socket.emit('chat message',message,color)
+			socket.emit('chat message',message,color,document.getElementById("keybox").value)
 			document.getElementById("mainBox").value = "";
 			recent = true;
 			setTimeout(function(){recent=false;},3000);
 	}else{
-		//response.sendRedirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+		
 	}
   }
-  socket.on('return message', function(msg,count,sound){
-		document.getElementById("messages").innerHTML = msg;
-		document.getElementById("divers").innerHTML = count+"";
-		audio = document.getElementById("note");
-		if(sound==true){
-			audio.play();
+  
+  function askForMessages(){
+	  socket.emit("ask",document.getElementById("keybox").value);
+  }
+  
+  socket.on('return message', function(msg,count,sound,key){
+	  mkey = document.getElementById("keybox").value;
+		if(mkey == null || mkey == "" || mkey==undefined || mkey=="undefined"){
+			mkey = 1;
+			document.getElementById("keybox").value = 1;
+		}
+	  if(mkey == key){
+			document.getElementById("messages").innerHTML = msg;
+			document.getElementById("divers").innerHTML = count+"";
+			audio = document.getElementById("note");
+			if(sound==true){
+				audio.play();
+			}
 		}
   });
   
+  socket.on('refresh',function(){
+	 if(document.getElementById("refCheck").checked){
+		 window.location.reload();
+	 } 
+  });
+  
+  
 function uploadMeme(){
-	alert("MEME UPLOADING")
-	
+	window.location.reload();
+	//alert("MEME UPLOADING")
 }
   
 function randomizeColor(){
@@ -155,6 +167,10 @@ function stopRandom(){
 			<span>color(hexadecimal): #</span>
 			<input type="text" id="colorBox"/>
 			<input type="button" onclick="randomizeColor()" value="Randomize Color"/>
+			<span>key:</span>
+			<input type="text" id="keybox"/>
+			<span>refresh:</span>
+			<input type="checkbox" id ="refCheck" checked/>
 			<!--<span id="dispColor">Current Color</span>-->
 			<input type="text" id="mainBox"/>
 			<!--<input id="mainButton" type="button" onClick="sendMessage()" value="Push me!"/>-->
@@ -170,10 +186,12 @@ function stopRandom(){
 		<div id="memeStuff">
 			<form id="memeForm" action="" method="post" encType="multipart/form-data">
 				<input type="file" id="memeFile" name="tempFile"/> 
-				<input type="submit" value="SUBMIT MEME"/>
+				<input type="submit" value="SUBMIT MEME" onClick="uploadMeme()"/>
 			</form>
 		</div>
 	</div>
+	<br/>
+	<a href="10.3.52.182:1338">Gaming server! Memedumpster.io</a>
 </div>
 
 <script>
@@ -182,6 +200,15 @@ function stopRandom(){
     var keyCode = e.keyCode || e.which;
     if (keyCode == '13'){
       sendMessage();
+      return false;
+    }
+  }
+  
+  document.getElementById('keyBox').onkeypress = function(e){
+    if (!e) e = window.event;
+    var keyCode = e.keyCode || e.which;
+    if (keyCode == '13'){
+      askForMessages();
       return false;
     }
   }

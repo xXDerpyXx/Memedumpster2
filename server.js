@@ -5,6 +5,7 @@ var userTotal = 0;
 console.log("GOT EXPRESS");
 var app = express();
 var lastMsg = "";
+var keys = {};
 //var fileIO = require('socket.io-file');
 console.log("GOT APP");
 var http = require('http').Server(app);
@@ -20,19 +21,22 @@ io.on('connection', function(socket){
   		console.log('a user connected');
   		console.log('user count: '+userTotal)
   		var color = ""
- 		io.emit('return message',allMessage,userTotal,false);
+   		io.emit('return message',keys[1],userTotal,false,1);
  		socket.on('disconnect', function(){
    			console.log('user disconnected');
    			userTotal -= 1;
    			console.log('user count: '+userTotal)
-   			io.emit('return message',allMessage,userTotal,false);
+   			io.emit('return message',keys[1],userTotal,false,1);
  	});
 });
 
 http.listen(1337);
 io.on('connection', function(socket){
     
-socket.on('chat message', function(msg,color){
+socket.on('chat message', function(msg,color,key){
+	if(key == null || key == "" || key==undefined || key=="undefined"){
+		key = 1;
+	}
 	console.log('message: ' + msg);
 	console.log('   color: ' + color);
 	msg = msg + "";
@@ -49,9 +53,9 @@ socket.on('chat message', function(msg,color){
 			console.log("TOO LONG");
 		}else{
 			if(msg.length>1){
-				allMessage = '<div style="background-color:#'+color+';padding:3px">'+msg+"</div>" +allMessage;
-				io.emit('return message',allMessage,userTotal,true);
-				console.log('   sending back: "'+msg+'", color: '+color);	
+				keys[key] = '<div style="background-color:#'+color+';padding:3px">'+msg+"</div>" +keys[key];
+				io.emit('return message',keys[key],userTotal,true,key);
+				console.log('   sending back: "'+msg+'", color: '+color+' key:'+key);	
 			}else{
 				console.log('TOO SHORT')
 			}
@@ -59,6 +63,14 @@ socket.on('chat message', function(msg,color){
 	}
 	
 	console.log('---------------')
+	});
+	
+	socket.on("ask",function(key){
+		if(key == null || key == "" || key==undefined || key=="undefined"){
+			key = 1;
+		}
+		//console.log(key);
+		io.emit('return message',keys[key],userTotal,true,key);
 	});
 });
 
@@ -75,6 +87,8 @@ app.post('/upload',function(req,res){
 			}
 	});
 	console.log("PICTURE UPLOADING 3");
+	
+	io.emit('refresh')
 });
 
 console.log("FINISHED");
