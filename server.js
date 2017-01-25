@@ -35,7 +35,12 @@ io.on('connection', function(socket){
 socket.on('chat message', function(msg,color){
 	console.log('message: ' + msg);
 	console.log('   color: ' + color);
+	msg = msg + "";
 	msg = msg.trim();
+	msg = msg.replace('<', '');
+	msg = msg.replace('>', '');
+	msg = msg.replace("<!--", '');
+	
 	if(msg == lastMsg){
 		console.log("REPEAT");
 	}else{
